@@ -1,0 +1,316 @@
+
+{% extends "base.html" %}
+
+{% block title %}Overview{% endblock %}
+{% block breadcrumb %}Overview{% endblock %}
+
+{% block content %}
+<section class="welcome-row dashboard-welcome">
+    <div class="welcome-copy">
+        <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            YOUR PERSONAL STUDY SPACE
+        </div>
+
+        <h1>Make progress on <span class="gradient-text">what matters.</span></h1>
+
+        <p class="subheading">
+            A clear view of your goals, your deadlines, and the next step
+            worth taking. Progress, one task at a time.
+        </p>
+
+        <div class="welcome-actions">
+            <a class="button button-primary" href="{{ url_for('add_task') }}">
+                <span aria-hidden="true">＋</span> Create a task
+            </a>
+            <a class="button button-soft" href="{{ url_for('schedule') }}">
+                View study plan <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="welcome-art" aria-hidden="true">
+        <div class="art-sun"></div>
+        <div class="art-book">✧</div>
+        <div class="art-leaf leaf-one">❋</div>
+        <div class="art-leaf leaf-two">✦</div>
+        <div class="art-orbit"></div>
+    </div>
+</section>
+
+<section class="stats-grid dashboard-stats">
+    <article class="stat-card stat-lilac">
+        <div class="stat-top">
+            <span class="stat-label">Total tasks</span>
+            <span class="stat-icon" aria-hidden="true">▦</span>
+        </div>
+
+        <div class="stat-number">{{ total }}</div>
+        <div class="stat-note">Everything on your list</div>
+        <div class="stat-decoration" aria-hidden="true">✦</div>
+    </article>
+
+    <article class="stat-card stat-mint">
+        <div class="stat-top">
+            <span class="stat-label">Completed</span>
+            <span class="stat-icon" aria-hidden="true">✓</span>
+        </div>
+
+        <div class="stat-number">{{ completed }}</div>
+        <div class="stat-note">
+            {{ (completed * 100 // total) if total else 0 }}% completion rate
+        </div>
+
+        <div
+            class="mini-progress"
+            role="progressbar"
+            aria-label="Task completion"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="{{ (completed * 100 // total) if total else 0 }}"
+        >
+            <span style="width: {{ (completed * 100 // total) if total else 0 }}%"></span>
+        </div>
+    </article>
+
+    <article class="stat-card stat-peach">
+        <div class="stat-top">
+            <span class="stat-label">Pending</span>
+            <span class="stat-icon" aria-hidden="true">◷</span>
+        </div>
+
+        <div class="stat-number">{{ pending }}</div>
+        <div class="stat-note">Ready for your attention</div>
+        <div class="stat-decoration" aria-hidden="true">⌁</div>
+    </article>
+
+    <article class="stat-card stat-blue">
+        <div class="stat-top">
+            <span class="stat-label">Estimated study time</span>
+            <span class="stat-icon" aria-hidden="true">⌛</span>
+        </div>
+
+        <div class="stat-number">
+            {{ minutes // 60 }}<small>h</small>
+            {{ minutes % 60 }}<small>m</small>
+        </div>
+
+        <div class="stat-note">Time remaining across pending tasks</div>
+        <div class="stat-decoration" aria-hidden="true">✧</div>
+    </article>
+</section>
+
+<div class="content-grid dashboard-content-grid">
+
+    <section class="panel tasks-panel dashboard-tasks-panel">
+        <div class="panel-heading dashboard-panel-heading">
+            <div>
+                <div class="eyebrow">YOUR WORKSPACE</div>
+                <h2>
+                    Your tasks
+                    <span class="heading-count">{{ pending }} pending</span>
+                </h2>
+                <p class="dashboard-panel-description">
+                    Keep track of what needs to get done next.
+                </p>
+            </div>
+
+            <a class="button button-primary dashboard-add-button"
+               href="{{ url_for('add_task') }}">
+                <span aria-hidden="true">＋</span> Add task
+            </a>
+        </div>
+
+        <div class="filter-row dashboard-filter-row">
+            <span class="filter-caption">FILTER BY STATUS</span>
+
+            <div class="filter-pills" role="group" aria-label="Filter tasks">
+                <button type="button" class="filter-pill selected" data-filter="all" aria-pressed="true">
+                    All
+                </button>
+                <button type="button" class="filter-pill" data-filter="Pending" aria-pressed="false">
+                    Pending
+                </button>
+                <button type="button" class="filter-pill" data-filter="Completed" aria-pressed="false">
+                    Completed
+                </button>
+            </div>
+        </div>
+
+        <div class="task-list dashboard-task-list" id="task-list">
+            {% for task in tasks %}
+            <article
+                class="task-item dashboard-task-item {% if task.status == 'Completed' %}is-complete{% endif %}"
+                data-status="{{ task.status }}"
+                data-search="{{ (task.title ~ ' ' ~ task.subject)|lower }}"
+            >
+                <form
+                    action="{{ url_for('toggle_task', task_id=task.id) }}"
+                    method="post"
+                    class="check-form"
+                >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <button
+                        type="submit"
+                        class="task-check {% if task.status == 'Completed' %}checked{% endif %}"
+                        aria-label="{% if task.status == 'Completed' %}Mark {{ task.title }} as pending{% else %}Mark {{ task.title }} as completed{% endif %}"
+                        title="Toggle task completion"
+                    >
+                        {% if task.status == 'Completed' %}✓{% endif %}
+                    </button>
+                </form>
+
+                <div class="task-main">
+                    <div class="task-title-line">
+                        <h3>{{ task.title }}</h3>
+
+                        <span class="priority priority-{{ task.priority|lower }}">
+                            {{ task.priority }}
+                        </span>
+                    </div>
+
+                    <div class="task-meta">
+                        <span class="subject-dot" aria-hidden="true"></span>
+                        <span>{{ task.subject }}</span>
+                        <span class="meta-sep" aria-hidden="true">·</span>
+                        <span>{{ task.duration }} min</span>
+                    </div>
+                </div>
+
+                <div class="task-deadline {% if task.is_overdue %}overdue{% endif %}">
+                    <span>DEADLINE</span>
+                    <strong>{{ task.due_date.strftime('%d %b') }}</strong>
+                    <small>{{ task.due_time.strftime('%H:%M') }}</small>
+
+                    {% if task.is_overdue and task.status != 'Completed' %}
+                    <small class="dashboard-overdue-label">Overdue</small>
+                    {% endif %}
+                </div>
+
+                <form
+                    action="{{ url_for('delete_task', task_id=task.id) }}"
+                    method="post"
+                    class="delete-form"
+                    data-confirm="Delete this task?"
+                >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <button
+                        type="submit"
+                        class="icon-button"
+                        title="Delete task"
+                        aria-label="Delete {{ task.title }}"
+                    >
+                        ⋯
+                    </button>
+                </form>
+            </article>
+            {% else %}
+            <div class="empty-state dashboard-empty-state">
+                <div class="empty-illustration" aria-hidden="true">✧</div>
+                <h3>A fresh page awaits.</h3>
+                <p>
+                    Start with one clear goal. Add a task and give yourself
+                    a concrete next step.
+                </p>
+                <a class="button button-primary" href="{{ url_for('add_task') }}">
+                    Create your first task <span aria-hidden="true">→</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="list-footer dashboard-list-footer">
+            <span>
+                Showing <strong id="visible-count">{{ tasks|length }}</strong> tasks
+            </span>
+
+            <a href="{{ url_for('schedule') }}">
+                Open study plan <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </section>
+
+    <aside class="right-column dashboard-sidebar">
+
+        <section class="panel nudge-panel dashboard-nudge-panel">
+            <div class="nudge-icon" aria-hidden="true">☼</div>
+
+            <div>
+                <div class="eyebrow">A LITTLE HEADS-UP</div>
+                <h3>Stay ahead of deadlines.</h3>
+                <p>
+                    Deadline emails are scheduled automatically when you create
+                    a task. Completing a task cancels its unsent reminders.
+                </p>
+            </div>
+        </section>
+
+        <section class="panel quick-panel dashboard-quick-panel">
+            <div class="panel-heading compact">
+                <div>
+                    <div class="eyebrow">SHORTCUTS</div>
+                    <h2>Quick actions</h2>
+                    <p class="dashboard-panel-description">
+                        The tools you need, all in one place.
+                    </p>
+                </div>
+            </div>
+
+            <div class="quick-actions-list">
+                <a class="quick-action-link quick-action-primary"
+                   href="{{ url_for('add_task') }}">
+                    <span class="quick-action-icon" aria-hidden="true">＋</span>
+                    <span class="quick-action-copy">
+                        <strong>Add a task</strong>
+                        <small>Plan your next goal</small>
+                    </span>
+                    <span class="quick-action-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a class="quick-action-link"
+                   href="{{ url_for('schedule') }}">
+                    <span class="quick-action-icon" aria-hidden="true">◷</span>
+                    <span class="quick-action-copy">
+                        <strong>Smart schedule</strong>
+                        <small>Review your study plan</small>
+                    </span>
+                    <span class="quick-action-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <a class="quick-action-link"
+                   href="{{ url_for('daily_reminder_settings') }}">
+                    <span class="quick-action-icon" aria-hidden="true">✉</span>
+                    <span class="quick-action-copy">
+                        <strong>Daily reminders</strong>
+                        <small>Manage email preferences</small>
+                    </span>
+                    <span class="quick-action-arrow" aria-hidden="true">→</span>
+                </a>
+            </div>
+
+            {% set reminder_tasks = tasks|selectattr('status', 'ne', 'Completed')|list %}
+
+            {% if reminder_tasks %}
+            <div class="task-reminder-shortcuts">
+                <div class="eyebrow">TASK REMINDERS</div>
+
+                {% for task in reminder_tasks %}
+                <a
+                    class="task-reminder-shortcut"
+                    href="{{ url_for('task_reminder', task_id=task.id) }}"
+                    title="Set a reminder for {{ task.title }}"
+                >
+                    <span class="task-reminder-shortcut-dot" aria-hidden="true"></span>
+                    <span>{{ task.title|truncate(26) }}</span>
+                    <span class="quick-action-arrow" aria-hidden="true">↗</span>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+
+    </aside>
+</div>
+{% endblock %}

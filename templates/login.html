@@ -1,0 +1,104 @@
+
+{% extends "base.html" %}
+
+{% block title %}Sign In{% endblock %}
+{% block breadcrumb %}Sign In{% endblock %}
+
+{% block content %}
+<section class="login-wrap">
+    <div class="login-card panel">
+
+        <div class="login-brand">
+            <div class="login-symbol" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="28" height="28" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor"
+                     stroke-width="1.7" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <rect x="4" y="5" width="16" height="16" rx="3"/>
+                    <path d="M8 3v4M16 3v4M4 10h16"/>
+                    <path d="m9 15 2 2 4-4"/>
+                </svg>
+            </div>
+            <span class="login-brand-name">Your Study Space</span>
+        </div>
+
+        <div class="login-intro">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                WELCOME BACK
+            </div>
+
+            <h1>Pick up where <span class="gradient-text">you left off.</span></h1>
+
+            <p class="subheading">
+                Sign in to organize your study tasks, stay ahead of deadlines,
+                and keep your day on track.
+            </p>
+        </div>
+
+        <form method="post" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ next_url }}">
+
+            <label for="login-email">Email address</label>
+            <input
+                type="email"
+                id="login-email"
+                name="email"
+                autocomplete="email"
+                required
+                maxlength="254"
+                placeholder="name@example.com"
+                autofocus
+            >
+
+            <label for="login-password">Password</label>
+            <input
+                type="password"
+                id="login-password"
+                name="password"
+                autocomplete="current-password"
+                required
+                maxlength="128"
+                placeholder="Enter your password"
+            >
+
+            <button class="button button-primary full-button" type="submit">
+                Sign in <span aria-hidden="true">→</span>
+            </button>
+        </form>
+
+        <div class="login-divider">
+            <span>YOUR WORKSPACE, READY WHEN YOU ARE</span>
+        </div>
+
+        <div class="login-points">
+            <div class="login-point">
+                <span class="login-point-icon" aria-hidden="true">✓</span>
+                <span>Organized tasks</span>
+            </div>
+
+            <div class="login-point">
+                <span class="login-point-icon" aria-hidden="true">✓</span>
+                <span>Deadline tracking</span>
+            </div>
+
+            <div class="login-point">
+                <span class="login-point-icon" aria-hidden="true">✓</span>
+                <span>Daily reminders</span>
+            </div>
+        </div>
+
+        <div class="login-footer">
+            <p>
+                Don't have an account?
+                <a href="{{ url_for('register') }}">
+                    <strong>Create an account <span aria-hidden="true">↗</span></strong>
+                </a>
+            </p>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: taskscheduler-free-combined
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: honcho start
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: TRUST_PROXY
+        value: "true"
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_FROM_NAME
+        value: TaskScheduler and DeadlineManager
+      - key: DISPOSABLE_EMAIL_DOMAINS
+        value: ""

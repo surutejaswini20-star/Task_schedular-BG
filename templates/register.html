@@ -1,0 +1,141 @@
+
+{% extends "base.html" %}
+
+{% block title %}Create Account{% endblock %}
+{% block breadcrumb %}Create Account{% endblock %}
+
+{% block content %}
+<section class="login-wrap">
+    <div class="login-card panel register-card">
+
+        <div class="login-brand">
+            <div class="login-symbol" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="28" height="28" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor"
+                     stroke-width="1.7" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <rect x="4" y="5" width="16" height="16" rx="3"/>
+                    <path d="M8 3v4M16 3v4M4 10h16"/>
+                    <path d="m9 15 2 2 4-4"/>
+                </svg>
+            </div>
+            <span class="login-brand-name">Your Study Space</span>
+        </div>
+
+        <div class="login-intro">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                GET STARTED
+            </div>
+
+            <h1>Build better habits, <span class="gradient-text">one day at a time.</span></h1>
+
+            <p class="subheading">
+                Create your account to organize study tasks, manage deadlines,
+                and build a routine that works for you.
+            </p>
+        </div>
+
+        <div class="register-benefits">
+            <div class="register-benefit">
+                <span class="register-benefit-icon" aria-hidden="true">✓</span>
+                <span>Keep your tasks organized</span>
+            </div>
+            <div class="register-benefit">
+                <span class="register-benefit-icon" aria-hidden="true">✓</span>
+                <span>Stay ahead of deadlines</span>
+            </div>
+            <div class="register-benefit">
+                <span class="register-benefit-icon" aria-hidden="true">✓</span>
+                <span>Get daily email reminders</span>
+            </div>
+        </div>
+
+        <div class="register-divider"></div>
+
+        <form method="post" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="register-name">Full name</label>
+            <input
+                type="text"
+                id="register-name"
+                name="name"
+                autocomplete="name"
+                required
+                maxlength="120"
+                placeholder="Enter your name"
+            >
+
+            <label for="register-email">Email address</label>
+            <input
+                type="email"
+                id="register-email"
+                name="email"
+                autocomplete="email"
+                required
+                maxlength="254"
+                placeholder="name@example.com"
+            >
+
+            <label for="register-password">Create a password</label>
+            <input
+                type="password"
+                id="register-password"
+                name="password"
+                autocomplete="new-password"
+                required
+                minlength="10"
+                maxlength="128"
+                aria-describedby="register-password-help"
+                placeholder="At least 10 characters"
+            >
+
+            <p class="auth-note" id="register-password-help">
+                Use at least 10 characters. Choose a password you don't use
+                for other accounts.
+            </p>
+
+            <div class="verification-note">
+                <div class="verification-note-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="21" height="21" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor"
+                         stroke-width="1.7" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/>
+                        <path d="m3 7 9 6 9-6"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <strong>Verify your email</strong>
+                    <p>
+                        We'll send you a six-digit verification code.
+                        It expires after 10 minutes.
+                    </p>
+                </div>
+            </div>
+
+            <button class="button button-primary full-button" type="submit">
+                Create account <span aria-hidden="true">→</span>
+            </button>
+
+            <p class="register-disclaimer">
+                Disposable email addresses are not accepted.
+            </p>
+        </form>
+
+        <div class="login-footer">
+            <p>
+                Already have an account?
+                <a href="{{ url_for('login') }}">
+                    <strong>Sign in <span aria-hidden="true">↗</span></strong>
+                </a>
+            </p>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,214 @@
+
+{% extends "base.html" %}
+
+{% block title %}Set Task Reminder{% endblock %}
+{% block breadcrumb %}Set Task Reminder{% endblock %}
+
+{% block content %}
+<section class="schedule-hero">
+    <div>
+        <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            PERSONALIZED NOTIFICATION
+        </div>
+
+        <h1>A timely nudge, <span class="gradient-text">right on time.</span></h1>
+
+        <p class="subheading">
+            Schedule an extra email reminder so you have time to prepare
+            before your task deadline.
+        </p>
+    </div>
+
+    <a class="button button-soft" href="{{ url_for('dashboard') }}">
+        <span aria-hidden="true">←</span> Dashboard
+    </a>
+</section>
+
+<section class="panel form-page-panel task-reminder-panel">
+
+    <div class="task-reminder-page-heading">
+        <div class="task-reminder-page-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="25" height="25" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor"
+                 stroke-width="1.7" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2"/>
+                <path d="m3 7 9 6 9-6"/>
+                <path d="M17 3v4M15 5h4"/>
+            </svg>
+        </div>
+
+        <div>
+            <h2>Additional task reminder</h2>
+            <p>Choose when and where the reminder should be delivered.</p>
+        </div>
+    </div>
+
+    <div class="task-reminder-divider"></div>
+
+    <div class="reminder-task-summary">
+        <div class="reminder-task-summary-top">
+            <span class="reminder-summary-label">TASK YOU'RE REMINDING YOURSELF ABOUT</span>
+
+            {% if task.status == 'Completed' %}
+                <span class="reminder-status completed">Completed</span>
+            {% else %}
+                <span class="reminder-status pending">Pending</span>
+            {% endif %}
+        </div>
+
+        <h3>{{ task.title }}</h3>
+
+        <div class="reminder-deadline">
+            <span class="reminder-deadline-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="17" height="17" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor"
+                     stroke-width="1.7" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 7v5l3 2"/>
+                </svg>
+            </span>
+
+            <span>
+                Deadline:
+                <strong>
+                    {{ task.due_date.strftime('%d %b %Y') }}
+                    at {{ task.due_time.strftime('%H:%M') }}
+                </strong>
+            </span>
+        </div>
+    </div>
+
+    {% if task.status == 'Completed' %}
+
+        <div class="reminder-state-message">
+            <div class="reminder-state-icon" aria-hidden="true">✓</div>
+
+            <div>
+                <h3>This task is already completed</h3>
+                <p>
+                    No additional reminder is needed. Choose another pending
+                    task from your dashboard if you need a notification.
+                </p>
+            </div>
+        </div>
+
+        <a class="button button-primary full-button"
+           href="{{ url_for('dashboard') }}">
+            Return to dashboard <span aria-hidden="true">→</span>
+        </a>
+
+    {% else %}
+
+        <div class="reminder-form-intro">
+            <h3>When should we remind you?</h3>
+            <p>
+                Select a date and time before the task deadline.
+            </p>
+        </div>
+
+        <form action="{{ url_for('task_reminder', task_id=task.id) }}"
+              method="post"
+              class="task-form reminder-custom-form">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="add-task-field">
+                <label for="reminder-email">
+                    Recipient email <span class="required-mark">*</span>
+                </label>
+
+                <input
+                    type="email"
+                    id="reminder-email"
+                    name="email"
+                    value="{{ current_user.email }}"
+                    autocomplete="email"
+                    maxlength="254"
+                    required
+                >
+
+                <p class="field-hint">
+                    The reminder will be sent to this email address.
+                </p>
+            </div>
+
+            <div class="form-row add-task-deadline-row">
+                <div class="add-task-field">
+                    <label for="reminder-date-input">
+                        Reminder date <span class="required-mark">*</span>
+                    </label>
+
+                    <input
+                        type="date"
+                        name="reminder_date"
+                        id="reminder-date-input"
+                        min="{{ today }}"
+                        required
+                    >
+                </div>
+
+                <div class="add-task-field">
+                    <label for="reminder-time-input">
+                        Reminder time <span class="required-mark">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reminder-time-input"
+                        name="reminder_time"
+                        placeholder="HH:MM"
+                        inputmode="numeric"
+                        pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+                        maxlength="5"
+                        aria-describedby="reminder-time-help"
+                        required
+                    >
+
+                    <p class="field-hint" id="reminder-time-help">
+                        Use 24-hour format, e.g. 18:30.
+                    </p>
+                </div>
+            </div>
+
+            <div class="task-reminder-info">
+                <div class="task-reminder-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="22" height="22" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor"
+                         stroke-width="1.7" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 11v5M12 8h.01"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <strong>Schedule before the deadline</strong>
+                    <p>
+                        Your reminder must be set for a future time earlier
+                        than the task deadline. Past times and invalid
+                        schedules are rejected by the server.
+                    </p>
+                </div>
+            </div>
+
+            <div class="add-task-actions">
+                <a class="button button-soft" href="{{ url_for('dashboard') }}">
+                    Cancel
+                </a>
+
+                <button class="button button-primary" type="submit">
+                    Schedule reminder <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </form>
+
+    {% endif %}
+
+</section>
+{% endblock %}

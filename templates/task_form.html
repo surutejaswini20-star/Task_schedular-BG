@@ -1,0 +1,245 @@
+
+{% extends "base.html" %}
+
+{% block title %}Create Task{% endblock %}
+{% block breadcrumb %}Create Task{% endblock %}
+
+{% block content %}
+<section class="schedule-hero">
+    <div>
+        <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            PLAN YOUR NEXT STEP
+        </div>
+
+        <h1>Turn your goals into <span class="gradient-text">action.</span></h1>
+
+        <p class="subheading">
+            Capture what needs to get done, set a deadline, and let your
+            study planner help you stay on track.
+        </p>
+    </div>
+
+    <a class="button button-soft" href="{{ url_for('dashboard') }}">
+        <span aria-hidden="true">←</span> Dashboard
+    </a>
+</section>
+
+<section class="panel form-page-panel add-task-panel">
+
+    <div class="add-task-heading">
+        <div class="add-task-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="25" height="25" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor"
+                 stroke-width="1.7" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="17" rx="2.5"/>
+                <path d="M8 2v4M16 2v4M4 9h16M9 14h6M9 17h3"/>
+            </svg>
+        </div>
+
+        <div>
+            <h2>Task details</h2>
+            <p>Give your task a name, deadline, and realistic time estimate.</p>
+        </div>
+    </div>
+
+    <div class="add-task-divider"></div>
+
+    <form action="{{ url_for('add_task') }}" method="post" class="task-form">
+
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="add-task-field">
+            <label for="task-title">Task name <span class="required-mark">*</span></label>
+
+            <input
+                type="text"
+                id="task-title"
+                name="title"
+                placeholder="e.g. Revise neural networks"
+                maxlength="160"
+                required
+                autofocus
+                autocomplete="off"
+            >
+
+            <p class="field-hint">Choose a clear name that describes the outcome.</p>
+        </div>
+
+        <div class="add-task-field">
+            <label for="task-subject">Subject or category <span class="required-mark">*</span></label>
+
+            <input
+                type="text"
+                id="task-subject"
+                name="subject"
+                placeholder="e.g. Deep Learning"
+                maxlength="100"
+                value="General"
+                required
+            >
+        </div>
+
+        <div class="add-task-divider"></div>
+
+        <div class="add-task-section-title">
+            <span class="section-number">01</span>
+            <div>
+                <h3>Set your deadline</h3>
+                <p>Choose when this task needs to be completed.</p>
+            </div>
+        </div>
+
+        <div class="form-row add-task-deadline-row">
+            <div class="add-task-field">
+                <label for="due-date-input">Deadline date <span class="required-mark">*</span></label>
+
+                <input
+                    type="date"
+                    name="due_date"
+                    id="due-date-input"
+                    min="{{ today }}"
+                    value="{{ today }}"
+                    required
+                >
+            </div>
+
+            <div class="add-task-field">
+                <label for="due-time-input">Deadline time <span class="required-mark">*</span></label>
+
+                <input
+                    type="text"
+                    id="due-time-input"
+                    name="due_time"
+                    value="23:59"
+                    placeholder="HH:MM"
+                    inputmode="numeric"
+                    pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+                    maxlength="5"
+                    aria-describedby="due-time-help"
+                    required
+                >
+
+                <p class="field-hint" id="due-time-help">24-hour format, e.g. 18:30.</p>
+            </div>
+        </div>
+
+        <div class="add-task-divider"></div>
+
+        <div class="add-task-section-title">
+            <span class="section-number">02</span>
+            <div>
+                <h3>Plan your effort</h3>
+                <p>Estimate how much focused time this task will need.</p>
+            </div>
+        </div>
+
+        <div class="add-task-field">
+            <label for="task-duration">Estimated duration <span class="required-mark">*</span></label>
+
+            <select name="duration" id="task-duration" required>
+                <option value="25">25 minutes · Quick review</option>
+                <option value="45">45 minutes · Focus session</option>
+                <option value="60" selected>60 minutes · One hour</option>
+                <option value="90">90 minutes · Deep work</option>
+                <option value="120">120 minutes · Extended session</option>
+            </select>
+        </div>
+
+        <div class="add-task-field priority-field">
+            <label>Priority <span class="required-mark">*</span></label>
+
+            <div class="priority-options">
+                <label class="priority-choice priority-low-choice">
+                    <input type="radio" name="priority" value="Low">
+                    <span class="priority-choice-content">
+                        <span class="priority-indicator" aria-hidden="true"></span>
+                        <strong>Low</strong>
+                        <small>When time allows</small>
+                    </span>
+                </label>
+
+                <label class="priority-choice priority-medium-choice">
+                    <input type="radio" name="priority" value="Medium" checked>
+                    <span class="priority-choice-content">
+                        <span class="priority-indicator" aria-hidden="true"></span>
+                        <strong>Medium</strong>
+                        <small>Normal priority</small>
+                    </span>
+                </label>
+
+                <label class="priority-choice priority-high-choice">
+                    <input type="radio" name="priority" value="High">
+                    <span class="priority-choice-content">
+                        <span class="priority-indicator" aria-hidden="true"></span>
+                        <strong>High</strong>
+                        <small>Needs attention</small>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="add-task-divider"></div>
+
+        <div class="add-task-section-title">
+            <span class="section-number">03</span>
+            <div>
+                <h3>Add a note</h3>
+                <p>Keep any extra instructions or useful context in one place.</p>
+            </div>
+        </div>
+
+        <div class="add-task-field">
+            <label for="task-notes">
+                Notes <span class="optional">(optional)</span>
+            </label>
+
+            <textarea
+                id="task-notes"
+                name="notes"
+                rows="4"
+                placeholder="What do you need to remember? Add topics, chapters, or specific goals..."
+            ></textarea>
+        </div>
+
+        <div class="task-reminder-info">
+            <div class="task-reminder-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="22" height="22" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor"
+                     stroke-width="1.7" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2"/>
+                    <path d="m3 7 9 6 9-6"/>
+                </svg>
+            </div>
+
+            <div>
+                <strong>Deadline email reminder</strong>
+                <p>
+                    A reminder is scheduled for your deadline.
+                    It will be sent if the task is still pending when the
+                    deadline arrives, according to your scheduler settings.
+                </p>
+            </div>
+        </div>
+
+        <div class="add-task-actions">
+            <a class="button button-soft" href="{{ url_for('dashboard') }}">
+                Cancel
+            </a>
+
+            <button class="button button-primary" type="submit">
+                Create task <span aria-hidden="true">→</span>
+            </button>
+        </div>
+
+        <p class="add-task-security-note">
+            Make sure your deadline leaves enough time to complete the task.
+        </p>
+
+    </form>
+</section>
+{% endblock %}
